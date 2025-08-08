@@ -1,0 +1,17 @@
+image:
+  file: .gitpod.Dockerfile
+
+tasks:
+  - name: Run Cooja VNC
+    init: |
+      cd /workspace/contiki-ng/tools/cooja
+    command: |
+      export DISPLAY=:1
+      Xvfb :1 -screen 0 1280x800x16 &
+      openbox &
+      cd /workspace/contiki-ng/tools/cooja && ant run &
+      websockify --web=/usr/share/novnc/ 6080 localhost:5901
+
+ports:
+  - port: 6080
+    onOpen: open-preview
