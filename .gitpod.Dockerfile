@@ -1,16 +1,25 @@
-FROM gitpod/workspace-full
+# .gitpod.Dockerfile
+FROM gitpod/workspace-full-vnc
 
-# Pre-set keyboard country to US to avoid interactive prompt
+USER root
+
+# Avoid any interactive prompts during build
 ENV DEBIAN_FRONTEND=noninteractive
-RUN sudo apt-get update && sudo apt-get install -y \
-    keyboard-configuration \
-    && sudo apt-get install -y \
-    default-jdk ant libncurses5-dev lib32z1 lib32stdc++6 \
-    maven xorg openbox novnc websockify supervisor \
-    && sudo apt-get clean
+RUN apt-get update && \
+    apt-get install -y \
+      openjdk-11-jdk \
+      ant \
+      git \
+      wget \
+      unzip \
+      build-essential \
+      python3 \
+      python3-pip \
+      bc \
+      ca-certificates \
+      x11vnc \
+      xvfb \
+      && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Contiki-NG
-RUN git clone https://github.com/contiki-ng/contiki-ng.git /workspace/contiki-ng
-
-# Build Cooja
-RUN cd /workspace/contiki-ng/tools/cooja && ant jar
+USER gitpod
+ENV HOME=/home/gitpod
