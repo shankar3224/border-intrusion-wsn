@@ -1,17 +1,25 @@
+# .gitpod.yml
 image:
   file: .gitpod.Dockerfile
 
 tasks:
-  - name: Run Cooja VNC
-    init: |
-      cd /workspace/contiki-ng/tools/cooja
-    command: |
-      export DISPLAY=:1
-      Xvfb :1 -screen 0 1280x800x16 &
-      openbox &
-      cd /workspace/contiki-ng/tools/cooja && ant run &
-      websockify --web=/usr/share/novnc/ 6080 localhost:5901
+  - init: |
+      # Clone Contiki-NG if not already present
+      if [ ! -d contiki-ng ]; then
+        git clone --depth 1 https://github.com/contiki-ng/contiki-ng.git
+      fi
+      cd contiki-ng/tools/cooja
+      ./gradlew assemble || true
+  - command: |
+      cd contiki-ng/tools/cooja
+      ./gradlew run &
+      sleep 8
+      gp preview http://localhost:6080
 
 ports:
   - port: 6080
     onOpen: open-preview
+
+vscode:
+  extensions:
+    - ms-vscode.cpptools
