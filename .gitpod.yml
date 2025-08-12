@@ -1,25 +1,19 @@
-# .gitpod.yml
-image:
-  file: .gitpod.Dockerfile
-
 tasks:
-  - init: |
-      # Clone Contiki-NG if not already present
-      if [ ! -d contiki-ng ]; then
-        git clone --depth 1 https://github.com/contiki-ng/contiki-ng.git
-      fi
+  - name: Setup & Run Cooja with Simulation
+    init: |
+      sudo apt update
+      sudo apt install -y ant openjdk-8-jdk git
+      git clone --recursive https://github.com/contiki-ng/contiki-ng.git
+    command: |
       cd contiki-ng/tools/cooja
-      ./gradlew assemble || true
-  - command: |
-      cd contiki-ng/tools/cooja
-      ./gradlew run &
-      sleep 8
-      gp preview http://localhost:6080
-
-ports:
-  - port: 6080
-    onOpen: open-preview
+      ant run -Dargs="/workspace/border-intrusion-wsn/border_security.csc" &
 
 vscode:
   extensions:
-    - ms-vscode.cpptools
+    - ms-vscode.simple-browser
+
+ports:
+  - port: 8080
+    onOpen: open-browser
+  - port: 5900
+    onOpen: notify
